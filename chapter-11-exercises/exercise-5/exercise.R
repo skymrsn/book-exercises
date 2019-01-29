@@ -9,23 +9,37 @@ library("dplyr")
 # What was the average departure delay in each month?
 # Save this as a data frame `dep_delay_by_month`
 # Hint: you'll have to perform a grouping operation then summarizing your data
-
+dep_delay_by_month <- flights %>%
+  group_by(month) %>%
+  summarize(delay = mean(dep_delay, na.rm = TRUE))
+dep_delay_by_month
 
 # Which month had the greatest average departure delay?
-
+max_ave <- filter(dep_delay_by_month, delay == max(delay)) %>% select(month)
 
 # If your above data frame contains just two columns (e.g., "month", and "delay"
 # in that order), you can create a scatterplot by passing that data frame to the
 # `plot()` function
-
+plot(dep_delay_by_month)
 
 # To which destinations were the average arrival delays the highest?
 # Hint: you'll have to perform a grouping operation then summarize your data
 # You can use the `head()` function to view just the first few rows
-
+des_delay <- flights %>% 
+  group_by(dest) %>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(-delay)
+head(des_delay)
+  
 
 # You can look up these airports in the `airports` data frame!
-
+filter(airports, faa == des_delay$dest[1])
+View(airports)
 
 # Which city was flown to with the highest average speed?
-
+city_fast <- flights %>%
+  group_by(dest) %>%
+  summarise(avg_spd = mean(distance/air_time * 60), na.rm = TRUE) %>%
+  filter(avg_spd == max(avg_spd, na.rm = TRUE)) %>%
+  select(dest)
+city_fast
